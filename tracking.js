@@ -81,28 +81,30 @@ function makeid(length) {
   return result;
 }
 
-let source = getParameterByName("utm_source");
-let medium = getParameterByName("utm_medium");
-let campaign = getParameterByName("utm_campaign");
-let content = getParameterByName("utm_content");
-let agent_id = getParameterByName("agent_id");
-let email = getParameterByName("email");
-let user_name = getParameterByName("name");
-let phone = getParameterByName("phone");
+$(function() {
+  let source = getParameterByName("utm_source");
+  let medium = getParameterByName("utm_medium");
+  let campaign = getParameterByName("utm_campaign");
+  let content = getParameterByName("utm_content");
+  let agent_id = getParameterByName("agent_id");
+  let email = getParameterByName("email");
+  let user_name = getParameterByName("name");
+  let phone = getParameterByName("phone");
 
-if (user_name) {
-  if (user_name.indexOf(" ") >= 0) {
-    let nameString = user_name.split(" ");
-    set_tracking_cookie("first-name", nameString[0]);
-    set_tracking_cookie("last-name", nameString.slice(1).join(" "));
+  if (user_name) {
+    if (user_name.indexOf(" ") >= 0) {
+      let nameString = user_name.split(" ");
+      set_tracking_cookie("first-name", nameString[0]);
+      set_tracking_cookie("last-name", nameString.slice(1).join(" "));
+    }
   }
-}
 
-set_tracking_cookie("utm_source", source);
-set_tracking_cookie("utm_medium", medium);
-set_tracking_cookie("utm_campaign", campaign);
-set_tracking_cookie("utm_content", content);
-set_tracking_cookie("agent_id", agent_id);
-set_tracking_cookie("email", email);
-set_tracking_cookie("name", user_name);
-set_tracking_cookie("phone", phone);
+  set_tracking_cookie("utm_source", source);
+  set_tracking_cookie("utm_medium", medium);
+  set_tracking_cookie("utm_campaign", campaign);
+  set_tracking_cookie("utm_content", content);
+  set_tracking_cookie("agent_id", agent_id);
+  set_tracking_cookie("email", email);
+  set_tracking_cookie("name", user_name);
+  set_tracking_cookie("phone", phone);
+})
