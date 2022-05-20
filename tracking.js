@@ -101,12 +101,12 @@ docReady(function() {
   let content = getParameterByName("utm_content");
   let agent_id = getParameterByName("agent_id");
   let email = getParameterByName("email");
-  let user_name = getParameterByName("name");
+  let user_name = getParameterByName("name") || getParameterByName("fullname");
   let phone = getParameterByName("phone");
 
   if (user_name) {
-    if (user_name.indexOf(" ") >= 0) {
-      let nameString = user_name.split(" ");
+    if (user_name.indexOf(" ") >= 0 || user_name.indexOf("+") >= 0) {
+      let nameString = user_name.replace("+", " ").split(" ");
       set_tracking_cookie("first-name", nameString[0]);
       set_tracking_cookie("last-name", nameString.slice(1).join(" "));
     }
