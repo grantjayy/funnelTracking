@@ -81,7 +81,20 @@ function makeid(length) {
   return result;
 }
 
-$(function() {
+function docReady(fn) {
+  if (document.readyState != 'loading'){
+    fn();
+  } else if (document.addEventListener) {
+    document.addEventListener('DOMContentLoaded', fn);
+  } else {
+    document.attachEvent('onreadystatechange', function() {
+      if (document.readyState != 'loading')
+        fn();
+    });
+  }
+}
+
+docReady(function() {
   let source = getParameterByName("utm_source");
   let medium = getParameterByName("utm_medium");
   let campaign = getParameterByName("utm_campaign");
