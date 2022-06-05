@@ -1,4 +1,4 @@
-export function set_tracking_cookie(queryParam, value) {
+function set_tracking_cookie(queryParam, value) {
   if (value) {
     if (
       Cookies.get(queryParam) == null ||
@@ -17,7 +17,7 @@ export function set_tracking_cookie(queryParam, value) {
   }
 }
 
-export function getParameterByName(name) {
+function getParameterByName(name) {
   name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
   var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
     results = regex.exec(location.search);
@@ -26,7 +26,7 @@ export function getParameterByName(name) {
     : decodeURIComponent(results[1].replace(/\+/g, " "));
 }
 
-export function get_tracking_cookies() {
+function get_tracking_cookies() {
   let params = new URLSearchParams({});
   if (Cookies.get("utm_source")) {
     params.append("utm_source", Cookies.get("utm_source"));
@@ -55,7 +55,7 @@ export function get_tracking_cookies() {
   return params;
 }
 
-export const isInViewport = function (elem) {
+const isInViewport = function (elem) {
   var offset = 600;
   var bounding = elem.getBoundingClientRect();
 
@@ -70,7 +70,7 @@ export const isInViewport = function (elem) {
   );
 };
 
-export const makeid = (length) => {
+const makeid = (length) => {
   var result = "";
   var characters =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -81,41 +81,55 @@ export const makeid = (length) => {
   return result;
 };
 
-export const makeCalendlyUrl = (base_url) => {
-  if ($("#iframe-inject-cal").length) {
-    let linkInject = {
-      utm_source: Cookies.get("utm_source") || "null",
-      utm_medium: Cookies.get("utm_medium") || "null",
-      utm_campaign: Cookies.get("utm_campaign") || "null",
-      utm_content: Cookies.get("utm_content") || "null",
-      utm_content: Cookes.get("utm_content") || "null",
-      name: Cookies.get("name") || "",
-      email: Cookies.get("email") || "",
-    };
+const makeCalendlyUrl = (base_url, extra="") => {
+  $(function(){
+    if ($("#iframe-inject-cal").length) {
+      let linkInject = {
+        utm_source:
+          Cookies.get("utm_source") || getParameterByName("utm_source") || "null",
+        utm_medium:
+          Cookies.get("utm_medium") || getParameterByName("utm_medium") || "null",
+        utm_campaign:
+          Cookies.get("utm_campaign") ||
+          getParameterByName("utm_medium") ||
+          "null",
+        utm_content:
+          Cookies.get("utm_content") ||
+          getParameterByName("utm_medium") ||
+          "null",
+        name: Cookies.get("name") || "",
+        email: Cookies.get("email") || "",
+      };
+      if (extra) {
+        extra = `&${extra}`
+      }
 
-    let url = `${base_url}?hide_gdpr_banner=1&hide_event_type_details=1&primary_color=fca311&hide_landing_page_details=1`;
+      let url = `${base_url}?hide_gdpr_banner=1&hide_event_type_details=1&primary_color=fca311&hide_landing_page_details=1${extra}`;
 
-    for (const key in linkInject) {
-      url += `&${key}=${linkInject[key]}`;
+      for (const key in linkInject) {
+        url += `&${key}=${linkInject[key]}`;
+      }
+      console.log(url);
+
+      $("#iframe-inject-cal").attr("src", url);
     }
-    console.log(url);
+  });
+}
 
-    $("#iframe-inject-cal").attr("src", url);
-  }
-};
+const delayedCta = (timeout=3000) => {
+  $(function(){
+    let hiddenCta = $(".hidden-cta");
+    hiddenCta.hide();
 
-export const delayedCta = (timeout) => {
-  let hiddenCta = $(".hidden-cta");
-  hiddenCta.hide();
+    if (hiddenCta.hasClass("hidden")) {
+      hiddenCta.removeClass("hidden");
+    }
 
-  if (hiddenCta.hasClass("hidden")) {
-    hiddenCta.removeClass("hidden");
-  }
-
-  setTimeout(function () {
-    console.log("hidden CTA Runs");
-    hiddenCta.fadeIn(2000);
-  }, timeout);
+    setTimeout(function () {
+      console.log("hidden CTA Runs");
+      hiddenCta.fadeIn(2000);
+    }, timeout);
+  });
 };
 
 function docReady(fn) {
