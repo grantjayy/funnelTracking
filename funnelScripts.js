@@ -1,4 +1,4 @@
-function set_tracking_cookie(queryParam, value) {
+export function set_tracking_cookie(queryParam, value) {
   if (value) {
     if (
       Cookies.get(queryParam) == null ||
@@ -17,7 +17,7 @@ function set_tracking_cookie(queryParam, value) {
   }
 }
 
-function getParameterByName(name) {
+export function getParameterByName(name) {
   name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
   var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
     results = regex.exec(location.search);
@@ -26,7 +26,7 @@ function getParameterByName(name) {
     : decodeURIComponent(results[1].replace(/\+/g, " "));
 }
 
-function get_tracking_cookies() {
+export function get_tracking_cookies() {
   let params = new URLSearchParams({});
   if (Cookies.get("utm_source")) {
     params.append("utm_source", Cookies.get("utm_source"));
@@ -55,7 +55,7 @@ function get_tracking_cookies() {
   return params;
 }
 
-var isInViewport = function (elem) {
+export const isInViewport = function (elem) {
   var offset = 600;
   var bounding = elem.getBoundingClientRect();
 
@@ -70,7 +70,7 @@ var isInViewport = function (elem) {
   );
 };
 
-function makeid(length) {
+export const makeid = (length) => {
   var result = "";
   var characters =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -79,21 +79,9 @@ function makeid(length) {
     result += characters.charAt(Math.floor(Math.random() * charactersLength));
   }
   return result;
-}
+};
 
-function docReady(fn) {
-  if (document.readyState != "loading") {
-    fn();
-  } else if (document.addEventListener) {
-    document.addEventListener("DOMContentLoaded", fn);
-  } else {
-    document.attachEvent("onreadystatechange", function () {
-      if (document.readyState != "loading") fn();
-    });
-  }
-}
-
-const makeCalendlyUrl = (base_url) => {
+export const makeCalendlyUrl = (base_url) => {
   if ($("#iframe-inject-cal").length) {
     let linkInject = {
       utm_source: Cookies.get("utm_source") || "null",
@@ -116,7 +104,7 @@ const makeCalendlyUrl = (base_url) => {
   }
 };
 
-const delayedCta = (timeout) => {
+export const delayedCta = (timeout) => {
   let hiddenCta = $(".hidden-cta");
   hiddenCta.hide();
 
@@ -129,6 +117,18 @@ const delayedCta = (timeout) => {
     hiddenCta.fadeIn(2000);
   }, timeout);
 };
+
+function docReady(fn) {
+  if (document.readyState != "loading") {
+    fn();
+  } else if (document.addEventListener) {
+    document.addEventListener("DOMContentLoaded", fn);
+  } else {
+    document.attachEvent("onreadystatechange", function () {
+      if (document.readyState != "loading") fn();
+    });
+  }
+}
 
 docReady(function () {
   let source = getParameterByName("utm_source");
