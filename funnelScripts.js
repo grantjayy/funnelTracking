@@ -143,7 +143,9 @@ const makeCalendlyUrl = (base_url, extra = "") => {
     });
   } catch (err) {
     errorTracking(`Error in makeCalendlyUrl -->\n${err}`);
-    document.getElementById("iframe-inject-cal").src = url;
+    docReady(function () {
+      document.getElementById("iframe-inject-cal").src = url;
+    });
   }
 };
 
@@ -164,11 +166,16 @@ const delayedCta = (timeout = 3000) => {
   } catch (err) {
     console.log(err);
     errorTracking(`Error in delayedCta -->\n${err}`);
-    let hiddenCta = document.getElementsByClassName("hidden-cta");
+    docReady(function () {
+      let hiddenCta = document.querySelector(".hidden-cta");
+      console.log(hiddenCta);
 
-    setTimeout(function () {
-      hiddenCta.classList.remove("hidden");
-    }, timeout);
+      setTimeout(function () {
+        hiddenCta.classList.remove("hidden");
+        console.log("passed hidden");
+        hiddenCta.style.display = null;
+      }, timeout);
+    });
   }
 };
 
