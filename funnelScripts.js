@@ -1,29 +1,51 @@
+const errorTracking = (message) => {
+  var xhr = new XMLHttpRequest();
+  xhr.open(
+    "POST",
+    "https://hooks.zapier.com/hooks/catch/10595435/bat6no6/",
+    true
+  );
+  xhr.send(
+    JSON.stringify({
+      message: message,
+    })
+  );
+};
+
 function set_tracking_cookie(queryParam, value) {
-  if (value) {
-    if (
-      Cookies.get(queryParam) == null ||
-      Cookies.get(queryParam) == "" ||
-      Cookies.get(queryParam) == "null"
-    ) {
-      let root = location.hostname
-        .split(".")
-        .reverse()
-        .splice(0, 2)
-        .reverse()
-        .join(".");
-      console.log("root domain", root);
-      Cookies.set(queryParam, value, { expires: 365, domain: root });
+  try {
+    if (value) {
+      if (
+        Cookies.get(queryParam) == null ||
+        Cookies.get(queryParam) == "" ||
+        Cookies.get(queryParam) == "null"
+      ) {
+        let root = location.hostname
+          .split(".")
+          .reverse()
+          .splice(0, 2)
+          .reverse()
+          .join(".");
+        console.log("root domain", root);
+        Cookies.set(queryParam, value, { expires: 365, domain: root });
+      }
     }
+  } catch (err) {
+    errorTracking(`Error in set_tracking_cookie -->\n${err}`);
   }
 }
 
 function getParameterByName(name) {
-  name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-  var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-    results = regex.exec(location.search);
-  return results == null
-    ? null
-    : decodeURIComponent(results[1].replace(/\+/g, " "));
+  try {
+    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+      results = regex.exec(location.search);
+    return results == null
+      ? null
+      : decodeURIComponent(results[1].replace(/\+/g, " "));
+  } catch (err) {
+    errorTracking(`Error in getParameterByName -->\n${err}`);
+  }
 }
 
 function get_tracking_cookies() {
@@ -81,55 +103,73 @@ const makeid = (length) => {
   return result;
 };
 
-const makeCalendlyUrl = (base_url, extra="") => {
-  $(function(){
-    if ($("#iframe-inject-cal").length) {
-      let linkInject = {
-        utm_source:
-          Cookies.get("utm_source") || getParameterByName("utm_source") || "null",
-        utm_medium:
-          Cookies.get("utm_medium") || getParameterByName("utm_medium") || "null",
-        utm_campaign:
-          Cookies.get("utm_campaign") ||
-          getParameterByName("utm_medium") ||
-          "null",
-        utm_content:
-          Cookies.get("utm_content") ||
-          getParameterByName("utm_medium") ||
-          "null",
-        name: Cookies.get("name") || "",
-        email: Cookies.get("email") || "",
-      };
-      if (extra) {
-        extra = `&${extra}`
+const makeCalendlyUrl = (base_url, extra = "") => {
+  if (extra) {
+    extra = `&${extra}`;
+  }
+  let url = `${base_url}?hide_gdpr_banner=1&hide_event_type_details=1&primary_color=fca311&hide_landing_page_details=1${extra}`;
+
+  try {
+    $(function () {
+      if ($("#iframe-inject-cal").length) {
+        let linkInject = {
+          utm_source:
+            Cookies.get("utm_source") ||
+            getParameterByName("utm_source") ||
+            "null",
+          utm_medium:
+            Cookies.get("utm_medium") ||
+            getParameterByName("utm_medium") ||
+            "null",
+          utm_campaign:
+            Cookies.get("utm_campaign") ||
+            getParameterByName("utm_medium") ||
+            "null",
+          utm_content:
+            Cookies.get("utm_content") ||
+            getParameterByName("utm_medium") ||
+            "null",
+          name: Cookies.get("name") || "",
+          email: Cookies.get("email") || "",
+        };
+
+        for (const key in linkInject) {
+          url += `&${key}=${linkInject[key]}`;
+        }
+        console.log(url);
+
+        $("#iframe-inject-cal").attr("src", url);
       }
+    });
+  } catch (err) {
+    errorTracking(`Error in makeCalendlyUrl -->\n${err}`);
+    document.getElementById("iframe-inject-cal").src = url;
+  }
+};
 
-      let url = `${base_url}?hide_gdpr_banner=1&hide_event_type_details=1&primary_color=fca311&hide_landing_page_details=1${extra}`;
+const delayedCta = (timeout = 3000) => {
+  try {
+    $(function () {
+      let hiddenCta = $(".hidden-cta");
+      hiddenCta.hide();
 
-      for (const key in linkInject) {
-        url += `&${key}=${linkInject[key]}`;
+      if (hiddenCta.hasClass("hidden")) {
+        hiddenCta.removeClass("hidden");
       }
-      console.log(url);
-
-      $("#iframe-inject-cal").attr("src", url);
-    }
-  });
-}
-
-const delayedCta = (timeout=3000) => {
-  $(function(){
-    let hiddenCta = $(".hidden-cta");
-    hiddenCta.hide();
-
-    if (hiddenCta.hasClass("hidden")) {
-      hiddenCta.removeClass("hidden");
-    }
+      setTimeout(function () {
+        console.log("hidden CTA Runs");
+        hiddenCta.fadeIn(2000);
+      }, timeout);
+    });
+  } catch (err) {
+    console.log(err);
+    errorTracking(`Error in delayedCta -->\n${err}`);
+    let hiddenCta = document.getElementsByClassName("hidden-cta");
 
     setTimeout(function () {
-      console.log("hidden CTA Runs");
-      hiddenCta.fadeIn(2000);
+      hiddenCta.classList.remove("hidden");
     }, timeout);
-  });
+  }
 };
 
 function docReady(fn) {
@@ -145,29 +185,34 @@ function docReady(fn) {
 }
 
 docReady(function () {
-  let source = getParameterByName("utm_source");
-  let medium = getParameterByName("utm_medium");
-  let campaign = getParameterByName("utm_campaign");
-  let content = getParameterByName("utm_content");
-  let agent_id = getParameterByName("agent_id");
-  let email = getParameterByName("email");
-  let user_name = getParameterByName("name") || getParameterByName("fullname");
-  let phone = getParameterByName("phone");
+  try {
+    let source = getParameterByName("utm_source");
+    let medium = getParameterByName("utm_medium");
+    let campaign = getParameterByName("utm_campaign");
+    let content = getParameterByName("utm_content");
+    let agent_id = getParameterByName("agent_id");
+    let email = getParameterByName("email");
+    let user_name =
+      getParameterByName("name") || getParameterByName("fullname");
+    let phone = getParameterByName("phone");
 
-  if (user_name) {
-    if (user_name.indexOf(" ") >= 0 || user_name.indexOf("+") >= 0) {
-      let nameString = user_name.replace("+", " ").split(" ");
-      set_tracking_cookie("first-name", nameString[0]);
-      set_tracking_cookie("last-name", nameString.slice(1).join(" "));
+    if (user_name) {
+      if (user_name.indexOf(" ") >= 0 || user_name.indexOf("+") >= 0) {
+        let nameString = user_name.replace("+", " ").split(" ");
+        set_tracking_cookie("first-name", nameString[0]);
+        set_tracking_cookie("last-name", nameString.slice(1).join(" "));
+      }
     }
-  }
 
-  set_tracking_cookie("utm_source", source);
-  set_tracking_cookie("utm_medium", medium);
-  set_tracking_cookie("utm_campaign", campaign);
-  set_tracking_cookie("utm_content", content);
-  set_tracking_cookie("agent_id", agent_id);
-  set_tracking_cookie("email", email);
-  set_tracking_cookie("name", user_name);
-  set_tracking_cookie("phone", phone);
+    set_tracking_cookie("utm_source", source);
+    set_tracking_cookie("utm_medium", medium);
+    set_tracking_cookie("utm_campaign", campaign);
+    set_tracking_cookie("utm_content", content);
+    set_tracking_cookie("agent_id", agent_id);
+    set_tracking_cookie("email", email);
+    set_tracking_cookie("name", user_name);
+    set_tracking_cookie("phone", phone);
+  } catch (err) {
+    errorTracking(`Error in start function -->\n${err}`);
+  }
 });
