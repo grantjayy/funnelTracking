@@ -103,11 +103,8 @@ const makeid = (length) => {
   return result;
 };
 
-const makeCalendlyUrl = (base_url, extra = "") => {
-  if (extra) {
-    extra = `&${extra}`;
-  }
-  let url = `${base_url}?hide_gdpr_banner=1&hide_event_type_details=1&hide_landing_page_details=1${extra}`;
+const makeCalendlyUrl = (base_url) => {
+  let url = `${base_url}&hide_gdpr_banner=1&hide_event_type_details=1&hide_landing_page_details=1`;
 
   try {
     $(function () {
