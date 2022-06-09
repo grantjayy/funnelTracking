@@ -107,7 +107,7 @@ const makeCalendlyUrl = (base_url, extra = "") => {
   if (extra) {
     extra = `&${extra}`;
   }
-  let url = `${base_url}?hide_gdpr_banner=1&hide_event_type_details=1&primary_color=fca311&hide_landing_page_details=1${extra}`;
+  let url = `${base_url}?hide_gdpr_banner=1&hide_event_type_details=1&hide_landing_page_details=1${extra}`;
 
   try {
     $(function () {
@@ -129,8 +129,15 @@ const makeCalendlyUrl = (base_url, extra = "") => {
             Cookies.get("utm_content") ||
             getParameterByName("utm_medium") ||
             "null",
-          name: Cookies.get("name") || "",
-          email: Cookies.get("email") || "",
+          name:
+            Cookies.get("name") ||
+            getParameterByName("name") ||
+            getParameterByName("fullname") ||
+            "",
+          email:
+            Cookies.get("email") ||
+            getParameterByName("email") ||
+            "",
         };
 
         for (const key in linkInject) {
