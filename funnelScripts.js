@@ -111,9 +111,15 @@ const makeCalendlyUrl = (base_url) => {
       if ($("#iframe-inject-cal").length) {
 
         let name = getTrackingId('name');
+
         if (name === "null") {
           name = getTrackingId('fullname');
         }
+
+        if (name === "null") {
+          name = '';
+        }
+
         let email = getTrackingId('email');
         if (email === 'null') {
           email = '';
