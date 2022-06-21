@@ -124,7 +124,7 @@ const makeCalendlyUrl = (base_url) => {
             "null",
           utm_content:
             Cookies.get("utm_content") ||
-            getParameterByName("utm_medium") ||
+            getParameterByName("utm_content") ||
             "null",
           name:
             Cookies.get("name") ||
@@ -182,6 +182,20 @@ const delayedCta = (timeout = 3000) => {
     });
   }
 };
+
+function getTrackingId(id) {
+  if (Cookies.get(id)) {
+    if (
+      Cookies.get(id) !== null ||
+      Cookies.get(id) !== "" ||
+      Cookies.get(id) !== "null"
+    ) {
+      return Cookies.get(id);
+    }
+  } else {
+    return getParameterByName(id) || "null";
+  }
+}
 
 function docReady(fn) {
   if (document.readyState != "loading") {
