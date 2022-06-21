@@ -109,32 +109,23 @@ const makeCalendlyUrl = (base_url) => {
   try {
     $(function () {
       if ($("#iframe-inject-cal").length) {
+
+        let name = getTrackingId('name');
+        if (name === "null") {
+          name = getTrackingId('fullname');
+        }
+        let email = getTrackingId('email');
+        if (email === 'null') {
+          email = '';
+        }
+
         let linkInject = {
-          utm_source:
-            Cookies.get("utm_source") ||
-            getParameterByName("utm_source") ||
-            "null",
-          utm_medium:
-            Cookies.get("utm_medium") ||
-            getParameterByName("utm_medium") ||
-            "null",
-          utm_campaign:
-            Cookies.get("utm_campaign") ||
-            getParameterByName("utm_medium") ||
-            "null",
-          utm_content:
-            Cookies.get("utm_content") ||
-            getParameterByName("utm_content") ||
-            "null",
-          name:
-            Cookies.get("name") ||
-            getParameterByName("name") ||
-            getParameterByName("fullname") ||
-            "",
-          email:
-            Cookies.get("email") ||
-            getParameterByName("email") ||
-            "",
+          utm_source: getTrackingId('utm_source'),
+          utm_medium: getTrackingId('utm_medium'),
+          utm_campaign: getTrackingId('utm_campaign'),
+          utm_content: getTrackingId('utm_content'),
+          name: name,
+          email: email
         };
 
         for (const key in linkInject) {
